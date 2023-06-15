@@ -1,0 +1,101 @@
+from ClaseHelado import Helado
+from ClaseManejaSabores import ManejaSabores
+import csv
+class ManejaHelados:
+    def __init__(self):
+        self.helados = []
+
+    def registrar_helado(self, helado):
+        self.helados.append(helado)
+
+    def sabores_mas_pedidos(self):
+        sabor_counts = {}
+        for helado in self.helados:
+            for sabor in helado.sabores:
+                if sabor in sabor_counts:
+                    sabor_counts[sabor] += 1
+                else:
+                    sabor_counts[sabor] = 1
+        sorted_sabores = sorted(sabor_counts, key=sabor_counts.get, reverse=True)
+        return sorted_sabores[:5]
+
+    def estimar_gramos_vendidos(self, numero_sabor):
+        total_gramos = 0
+        sabor_count = 0
+        for helado in self.helados:
+            for sabor in helado.sabores:
+                if sabor == numero_sabor:
+                    sabor_count += 1
+                    total_gramos += helado.peso / len(helado.sabores)
+        if sabor_count == 0:
+            return 0
+        return total_gramos / sabor_count
+
+    def sabores_por_tipo_helado(self, tipo_helado):
+        sabores_vendidos = []
+        for helado in self.helados:
+            if helado.peso == tipo_helado:
+                sabores_vendidos.extend(helado.sabores)
+        return list(set(sabores_vendidos))
+
+    def importe_total_recaudado(self):
+        importe_total = 0
+        tipo_helado_importe = {}
+        for helado in self.helados:
+            importe_total += helado.precio
+            if helado.peso in tipo_helado_importe:
+                tipo_helado_importe[helado.peso] += helado.precio
+            else:
+                tipo_helado_importe[helado.peso] = helado.precio
+        return importe_total, tipo_helado_importe
+
+
+
+    def registrar_helado_vendido(maneja_helados, maneja_sabores):
+        peso = int(input("Ingrese el peso del helado en gramos: "))
+        precio = float(input("Ingrese el precio del helado: "))
+        sabores = []
+        print("Seleccione los sabores del helado:")
+        for sabor in maneja_sabores.sabores:
+            print(f"{sabor.id_sabor}. {sabor.nombre}")
+        opcion = input("Ingrese el número del sabor (o 'q' para salir): ")
+        while opcion != 'q':
+            sabor_id = int(opcion)
+            sabores.append(sabor_id)
+            opcion = input("Ingrese el número del sabor (o 'q' para salir): ")
+            helado = Helado(peso, precio, sabores)
+            maneja_helados.registrar_helado(helado)
+            print("Helado registrado exitosamente.")
+
+        def mostrar_sabores_mas_pedidos(maneja_helados):
+            sabores_pedidos = maneja_helados.sabores_mas_pedidos()
+            print("Los 5 sabores de helado más pedidos son:")
+    for sabor_id in sabores_pedidos:
+        sabor = next((s for s in maneja_sabores.sabores if s.id_sabor == sabor_id), None)
+        if sabor:
+            print(f"- {sabor.nombre}")
+
+    def estimar_gramos_vendidos(maneja_helados):
+        numero_sabor = int(input("Ingrese el número del sabor: "))
+        gramos_estimados = maneja_helados.estimar_gramos_vendidos(numero_sabor)
+        print(f"Se estima que se han vendido aproximadamente {gramos_estimados} gramos del sabor {numero_sabor}.")
+
+    def mostrar_sabores_por_tipo_helado(maneja_helados):
+        tipo_helado = int(input("Ingrese el peso del helado: "))
+        sabores_vendidos = maneja_helados.sabores_por_tipo_helado(tipo_helado)
+        if sabores_vendidos:
+            print(f"Los sabores vendidos en helados de {tipo_helado} gramos son:")
+            for sabor_id in sabores_vendidos:
+                sabor = next((s for s in maneja_sabores.sabores if s.id_sabor == sabor_id), None)
+            if sabor:
+                print(f"- {sabor.nombre}")
+            else:
+                print(f"No se encontraron helados de {tipo_helado} gramos vendidos.")
+
+    def mostrar_importe_total_recaudado(maneja_helados):
+        importe_total, tipo_helado_importe = maneja_helados.importe_total_recaudado()
+        print(f"El importe total recaudado por la heladería es: ${importe_total:.2f}")
+        print("Detalle por tipo de helado:")
+        for tipo_helado, importe in tipo_helado_importe.items():
+            print(f"- Helados de {tipo_helado} gramos: ${importe:.2f}")
+
